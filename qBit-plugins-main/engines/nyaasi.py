@@ -1,20 +1,19 @@
 # -*- coding: utf-8 -*-
-#VERSION: 1.2
-#AUTHORS: Joost Bremmer (toost.b@gmail.com)
+# VERSION: 1.2
+# AUTHORS: Joost Bremmer (toost.b@gmail.com)
 #
-#  This program is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
-#  You should have received a copy of the GNU General Public License
-#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 try:
     from HTMLParser import HTMLParser
@@ -32,13 +31,13 @@ except ModuleNotFoundError:
 class nyaasi(object):
     """Class used by qBittorrent to search for torrents."""
 
-    url = 'https://nyaa.si'
-    name = 'Nyaa.si'
+    url = 'https://nyaa.si/'
+    name = 'CAMEESP'
 
     # Whether to use magnet links or download torrent files ###################
     #
     # Set to 'True' to use magnet links, or 'False' to use torrent files
-    use_magent_links = True
+    use_magnet_links = True
     #
     ###########################################################################
 
@@ -47,14 +46,15 @@ class nyaasi(object):
     # 'all', 'movies', 'tv', 'music', 'games', 'anime', 'software', 'pictures',
     # 'books'
     supported_categories = {
-            'all': '0_0',
-            'anime': '1_0',
-            'books': '3_0',
-            'music': '2_0',
-            'pictures': '5_0',
-            'software': '6_0',
-            'tv': '4_0',
-            'movies': '4_0'}
+        'all': '0_0',
+        'anime': '1_0',
+        'books': '3_0',
+        'music': '2_0',
+        'pictures': '5_0',
+        'software': '6_0',
+        'tv': '4_0',
+        'movies': '4_0'
+    }
 
     class NyaasiParser(HTMLParser):
         """Parses Nyaa.si browse page for search results and stores them."""
@@ -97,8 +97,9 @@ class nyaasi(object):
             if 'title' in params and 'class' not in params \
                     and params['href'].startswith('/view/'):
                 hit = {
-                        'name': params['title'],
-                        'desc_link': self.engine_url + params['href']}
+                    'name': params['title'],
+                    'desc_link': self.engine_url + params['href']
+                }
                 if not self.curr:
                     hit['engine_url'] = self.engine_url
                     self.curr = hit
@@ -160,21 +161,21 @@ class nyaasi(object):
     # This function will be the one called by nova2.py
     def search(self, what, cat='all'):
         """
-        Retreive and parse engine search results by category and query.
+        Retrieve and parse engine search results by category and query.
 
         Parameters:
         :param what: a string with the search tokens, already escaped
                      (e.g. "Ubuntu+Linux")
         :param cat:  the name of a search category, see supported_categories.
         """
-        url = str("{0}/?f=0&s=seeders&o=desc&c={1}&q={2}"
+        url = str("{0}?f=0&s=seeders&o=desc&c={1}&q=%5BCameEsp%5D+{2}"
                   .format(self.url,
                           self.supported_categories.get(cat),
                           what))
 
         hits = []
         page = 1
-        parser = self.NyaasiParser(hits, self.url, self.use_magent_links)
+        parser = self.NyaasiParser(hits, self.url, self.use_magnet_links)
         while True:
             res = retrieve_url(url + "&p={}".format(page))
             parser.feed(res)
@@ -187,3 +188,4 @@ class nyaasi(object):
             page += 1
 
         parser.close()
+
